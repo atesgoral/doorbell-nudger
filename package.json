@@ -1,0 +1,16 @@
+{
+  "name": "doorbell-nudger",
+  "version": "0.0.0",
+  "description": "",
+  "main": "bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ates Goral <ates@magnetiq.com> (http://magnetiq.com/)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.13.4",
+    "qr-image": "^3.1.0",
+    "speakeasy": "^2.0.0"
+  }
+}
