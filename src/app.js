@@ -1,6 +1,8 @@
 'use strict';
 
 const express = require('express');
+const auth = require('basic-auth');
+const HttpStatus = require('http-status-codes');
 const speakeasy = require('speakeasy');
 const qr = require('qr-image');
 const Twitter = require('twitter');
@@ -16,9 +18,20 @@ const client = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-app.use('/', express.static(__dirname + '/static'));
+function authorize(req, res, next) {
+  const user = auth(req);
 
-app.get('/qrcode', (req, res) => {
+  if (!user || user.name !== process.env.HTTP_AUTH_USER || user.pass !== process.env.HTTP_AUTH_PASS) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Doorbell Nudger"');
+    res.status(HttpStatus.UNAUTHORIZED).send('Who are you?');
+  } else {
+    next();
+  }
+}
+
+app.use('/', authorize, express.static(__dirname + '/static'));
+
+app.get('/qrcode', authorize, (req, res) => {
   const token = speakeasy.totp({
     secret: secret.base32,
     encoding: 'base32',
