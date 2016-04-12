@@ -19,7 +19,7 @@ app.get('/qrcode', (req, res) => {
 
   res.cookie('token', token);
 
-  qr.image(req.query.baseUrl + 'verify/' + token, { margin: 0 }).pipe(res);
+  qr.image(req.query.baseUrl + 'verify/' + token, { margin: 0, size: 10 }).pipe(res);
 });
 
 app.get('/verify/:token', (req, res) => {

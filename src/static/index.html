@@ -2,21 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Doorbell Notifier</title>
+<title>Doorbell Nudger</title>
 <style>
-body { background: #fff; margin: 0; padding: 0; }
+body {
+  background: white;
+  margin: 0;
+  padding: 0;
+}
+#qr_code_container {
+  text-align: center;
+  padding: 5%;
+}
+#qr_code {
+  width: 100%;
+}
+#token_container {
+  padding: 5%;
+  font-size: 50px;
+  line-height: 50px;
+}
+#token {
+  font-family: monospace;
+  font-weight: bold;
+}
+#countdown {
+  float: right;
+}
 </style>
 </head>
 <body>
-<img id="qr_code">
-<div id="token"></div>
-<div id="countdown"></div>
+<div id="qr_code_container">
+  <img id="qr_code">
+</div>
+<div id="token_container">
+  <span id="token"></span>
+  <canvas id="countdown"></canvas>
+</div>
 <script>
-var refreshInterval = 30;
-var refreshCountdown = refreshInterval;
+var refreshInterval = 30 * 1000;
+var refreshStart = Date.now();
 var qrCodeImg = document.getElementById('qr_code');
 var tokenBox = document.getElementById('token');
-var countdownBox = document.getElementById('countdown');
+var countdownCanvas = document.getElementById('countdown');
+var countdownCtx = countdownCanvas.getContext('2d');
+var countdownRadius = 25;
+var countdownThickness = 1;
+
+countdownCanvas.width = countdownRadius * 2;
+countdownCanvas.height = countdownRadius * 2;
 
 qrCodeImg.onload = function () {
   var matches = /\btoken=(\d+)/.exec(document.cookie);
@@ -31,16 +64,51 @@ function refreshQrCode() {
   qrCodeImg.src = 'qrcode?baseUrl=' + encodeURIComponent(document.location) + '&t=' + Date.now();
 }
 
-setInterval(function () {
-  if (--refreshCountdown === 0) {
-    refreshCountdown = refreshInterval;
+function drawRatio(ratio) {
+  var ctx = countdownCtx;
+  var rotation = - Math.PI / 2;
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, countdownRadius * 2, countdownRadius * 2);
+
+  ctx.fillStyle = "darkturquoise";
+  ctx.beginPath();
+  ctx.arc(countdownRadius, countdownRadius, countdownRadius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  ctx.moveTo(countdownRadius, countdownRadius);
+  ctx.arc(
+    countdownRadius,
+    countdownRadius,
+    countdownRadius - countdownThickness,
+    rotation,
+    Math.PI * 2 * ratio + rotation
+  );
+  ctx.lineTo(countdownRadius, countdownRadius);
+  ctx.closePath();
+  ctx.fill();
+}
+
+
+function tick() {
+  var now = Date.now();
+  var delta = now - refreshStart;
+  var ratio = Math.min(delta / refreshInterval, 1);
+
+  drawRatio(ratio);
+
+  if (ratio === 1) {
+    refreshStart = now;
     refreshQrCode();
   }
 
-  countdownBox.innerHTML = refreshCountdown;
-}, 1000);
+  setTimeout(tick, 1000 / 24);
+}
 
 refreshQrCode();
+tick();
 </script>
 </body>
 </html>
