@@ -29,8 +29,6 @@ function authorize(req, res, next) {
   }
 }
 
-app.use('/', authorize, express.static(__dirname + '/static'));
-
 app.get('/qrcode', authorize, (req, res) => {
   const token = speakeasy.totp({
     secret: secret.base32,
@@ -70,5 +68,7 @@ app.get('/verify/:token', (req, res) => {
 
   res.send(isValid);
 });
+
+app.use('/', authorize, express.static(__dirname + '/static'));
 
 module.exports = app;
