@@ -40,7 +40,7 @@ app.get('/verify/:token', (req, res) => {
   });
 
   if (isValid) {
-    client.post('statuses/update', { status: '@DoorbellRinger #ringit' }, (error, tweet, response) => {
+    client.post('statuses/update', { status: '@DoorbellRinger #ringit' + Date.now() }, (error, tweet, response) => {
       if (error) throw error;
     });
   }
