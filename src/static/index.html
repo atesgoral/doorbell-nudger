@@ -6,10 +6,41 @@
 <style>
 body { background: #fff; margin: 0; padding: 0; }
 </style>
-<script>
-</script>
 </head>
 <body>
-<img id="qr_code" src="#">
+<img id="qr_code">
+<div id="token"></div>
+<div id="countdown"></div>
+<script>
+var refreshInterval = 30;
+var refreshCountdown = refreshInterval;
+var qrCodeImg = document.getElementById('qr_code');
+var tokenBox = document.getElementById('token');
+var countdownBox = document.getElementById('countdown');
+
+qrCodeImg.onload = function () {
+  var matches = /\btoken=(\d+)/.exec(document.cookie);
+
+  if (matches) {
+    var token = matches[1];
+    tokenBox.innerHTML = token;
+  }
+}
+
+function refreshQrCode() {
+  qrCodeImg.src = 'qrcode?baseUrl=' + encodeURIComponent(document.location) + '&t=' + Date.now();
+}
+
+setInterval(function () {
+  if (--refreshCountdown === 0) {
+    refreshCountdown = refreshInterval;
+    refreshQrCode();
+  }
+
+  countdownBox.innerHTML = refreshCountdown;
+}, 1000);
+
+refreshQrCode();
+</script>
 </body>
 </html>
