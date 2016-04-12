@@ -39,6 +39,12 @@ app.get('/verify/:token', (req, res) => {
     token: req.params.token
   });
 
+  if (isValid) {
+    client.post('statuses/update', { status: '@DoorbellRinger #ringit' }, (error, tweet, response) => {
+      if (error) throw error;
+    });
+  }
+
   res.send(isValid);
 });
 
