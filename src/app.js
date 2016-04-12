@@ -55,20 +55,21 @@ app.get('/verify/:token', (req, res) => {
   if (isValid) {
     console.log('Token is valid');
 
-    client.post('statuses/update', { status: `Hey @DoorbellRinger, token ${ req.params.token } is valid. #ringit` }, (error) => {
+    client.post('statuses/update', { status: `Hey @DoorbellRinger, token ${ req.params.token } is valid. #ringit` }, (error, tweet) => {
       if (error) {
-        console.error('Tweet failed', error);
+        console.error('Tweet failed');
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).send('Tweet failed');
       } else {
-        console.log('Tweeted!');
+        console.log('Tweet successful');
+        res.redirect(`https://twitter.com/DoorbellNudger/status/${ tweet.id_str }`);
       }
     });
   } else {
     console.log('Token is invalid');
+    res.redirect('/invalid.html');
   }
-
-  res.send(isValid);
 });
 
-app.use('/', authorize, express.static(__dirname + '/static'));
+app.use('/', express.static(__dirname + '/static'));
 
 module.exports = app;
