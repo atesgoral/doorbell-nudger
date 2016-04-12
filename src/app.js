@@ -44,7 +44,7 @@ app.get('/verify/:token', (req, res) => {
   if (isValid) {
     console.log('Token is valid');
 
-    client.post('statuses/update', { status: '@DoorbellRinger #ringit' + Date.now() }, (error, tweet, response) => {
+    client.post('statuses/update', { status: `@DoorbellRinger Token ${ req.params.token } is valid. #ringit` }, (error) => {
       if (error) {
         console.error('Tweet failed', error);
       } else {
