@@ -1,5 +1,6 @@
 'use strict';
 
+const util = require('util');
 const express = require('express');
 const auth = require('basic-auth');
 const HttpStatus = require('http-status-codes');
@@ -57,7 +58,7 @@ app.get('/verify/:token', (req, res) => {
 
     client.post('statuses/update', { status: `Hey @DoorbellRinger, token ${ req.params.token } is valid. #ringit` }, (error, tweet) => {
       if (error) {
-        console.error('Tweet failed');
+        console.error('Tweet failed', util.inspect(error));
         res.status(HttpStatus.SERVICE_UNAVAILABLE).send('Tweet failed');
       } else {
         console.log('Tweet successful');
