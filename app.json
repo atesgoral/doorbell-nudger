@@ -1,0 +1,26 @@
+{
+  "name": "doorbell-nudger",
+  "scripts": {
+  },
+  "env": {
+    "TWITTER_CONSUMER_KEY": {
+      "required": true
+    },
+    "TWITTER_CONSUMER_SECRET": {
+      "required": true
+    },
+    "TWITTER_ACCESS_TOKEN_KEY": {
+      "required": true
+    },
+    "TWITTER_ACCESS_TOKEN_SECRET": {
+      "required": true
+    }
+  },
+  "addons": [
+  ],
+  "buildpacks": [
+    {
+      "url": "urn:buildpack:heroku/nodejs"
+    }
+  ]
+}
