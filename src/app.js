@@ -31,6 +31,8 @@ app.get('/qrcode', (req, res) => {
 });
 
 app.get('/verify/:token', (req, res) => {
+  console.log('Got token:', req.params.token);
+
   const isValid = speakeasy.totp.verify({
     secret: secret.base32,
     encoding: 'base32',
@@ -40,9 +42,17 @@ app.get('/verify/:token', (req, res) => {
   });
 
   if (isValid) {
+    console.log('Token is valid');
+
     client.post('statuses/update', { status: '@DoorbellRinger #ringit' + Date.now() }, (error, tweet, response) => {
-      if (error) throw error;
+      if (error) {
+        console.error('Tweet failed', error);
+      } else {
+        console.log('Tweeted!');
+      }
     });
+  } else {
+    console.log('Token is invalid');
   }
 
   res.send(isValid);
