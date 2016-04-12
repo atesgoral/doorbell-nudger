@@ -56,7 +56,7 @@ app.get('/verify/:token', (req, res) => {
   if (isValid) {
     console.log('Token is valid');
 
-    client.post('statuses/update', { status: `Hey @DoorbellRinger, token ${ req.params.token } is valid. #ringit` }, (error, tweet) => {
+    client.post('statuses/update', { status: `Hey @DoorbellRinger, token ${ req.params.token } is valid. #ringit ${ Date.now() }` }, (error, tweet) => {
       if (error) {
         console.error('Tweet failed', util.inspect(error));
         res.status(HttpStatus.SERVICE_UNAVAILABLE).send('Tweet failed');
