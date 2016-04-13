@@ -84,7 +84,20 @@ app.post('/travis', bodyParser.urlencoded({ extended: false }), (req, res) => {
     res.status(HttpStatus.UNAUTHORIZED).send('Go away.');
   } else {
     const payload = JSON.parse(req.body.payload);
-    console.log('Got payload', payload);
+
+    if (payload.status_message === "Passed") {
+      console.log(`Build #${ payload.number } passed`);
+
+      client.post('statuses/update', { status: `Hey @DoorbellRinger, build #${ payload.number } passed: ${ payload.build_url } #update` }, (error, tweet) => {
+        if (error) {
+          console.error('Tweet failed', util.inspect(error));
+          res.status(HttpStatus.SERVICE_UNAVAILABLE).send('Tweet failed');
+        } else {
+          console.log('Tweet successful');
+          res.status(HttpStatus.NO_CONTENT).end();
+        }
+      });
+    }
   }
 });
 
