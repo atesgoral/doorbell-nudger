@@ -1,7 +1,9 @@
 'use strict';
 
 const util = require('util');
+const crypto = require('crypto');
 const express = require('express');
+const bodyParser = require('body-parser');
 const auth = require('basic-auth');
 const HttpStatus = require('http-status-codes');
 const speakeasy = require('speakeasy');
@@ -68,6 +70,21 @@ app.get('/verify/:token', (req, res) => {
   } else {
     console.log('Token is invalid');
     res.redirect('/invalid.html');
+  }
+});
+
+app.post('/travis', bodyParser.urlencoded({ extended: false }), (req, res) => {
+  const expected = crypto
+    .createHash('sha256')
+    .update(req.get('Travis-Repo-Slug') + process.env.TRAVIS_TOKEN)
+    .digest('hex');
+
+  if (req.get('Authorization') !== expected) {
+    console.error('Travis CI webhook authorization failed');
+    res.status(HttpStatus.UNAUTHORIZED).send('Go away.');
+  } else {
+    const payload = JSON.parse(req.body.payload);
+    console.log('Got payload', payload);
   }
 });
 
